@@ -157,6 +157,11 @@ def main():
     ruta_output = os.path.join(ruta_base, "output", "presentacion-generada.odp")
     ruta_contenido = os.path.join(ruta_base, "input", "contenido.md")
     
+    # Borrar la presentación generada si existe
+    if os.path.exists(ruta_output):
+        print(f"Eliminando presentación generada previa: {ruta_output}")
+        os.remove(ruta_output)
+    
     # Verificar que existe el template
     if not os.path.exists(ruta_template):
         print(f"Error: No se encuentra el archivo {ruta_template}")
