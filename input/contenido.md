@@ -1,6 +1,6 @@
 # Portada
 ## ${titulo-presentacion}
-Tu Turno 3
+Tu Turno 2
 ## ${subtitulo-presentacion}
 Sistema de gestión de citas previas de la Junta de Andalucía 3
 
@@ -26,4 +26,4 @@ Permite al ciudadano solicitar, modificar o cancelar citas de manera sencilla de
 
 - Disponible en web y dispositivos móviles  
 - Integrado con los servicios administrativos  
-- Accesible, rápido y orientado al ciudadano  
+- Accesible, rápido y orientado al ciudadano 

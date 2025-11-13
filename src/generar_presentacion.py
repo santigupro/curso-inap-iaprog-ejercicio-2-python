@@ -8,6 +8,7 @@ import uno
 from com.sun.star.beans import PropertyValue
 import os
 import sys
+import re
 
 def create_property(name, value):
     """Crea un objeto PropertyValue para UNO"""
@@ -99,6 +100,39 @@ def obtener_reemplazos_primera_diapositiva(ruta_contenido):
             break
     return reemplazos
 
+def obtener_reemplazos_por_diapositiva(ruta_contenido):
+    """Obtiene los placeholders y textos a reemplazar para cada diapositiva desde contenido.md"""
+    with open(ruta_contenido, 'r', encoding='utf-8') as f:
+        contenido = f.read()
+    # Dividir por secciones principales (cada título de diapositiva)
+    secciones = re.split(r'^# ', contenido, flags=re.MULTILINE)[1:]
+    reemplazos_por_diapositiva = []
+    for seccion in secciones:
+        reemplazos = {}
+        lineas = seccion.strip().split('\n')
+        i = 0
+        while i < len(lineas):
+            linea = lineas[i].strip()
+            if linea.startswith('## ${') and linea.endswith('}'):
+                placeholder = linea[3:]
+                i += 1
+                contenido_placeholder = []
+                # Acumular todas las líneas hasta el siguiente subtítulo o título
+                while i < len(lineas):
+                    siguiente = lineas[i].strip()
+                    if siguiente.startswith('## ${') and siguiente.endswith('}'):
+                        break
+                    if siguiente.startswith('# '):
+                        break
+                    contenido_placeholder.append(lineas[i].rstrip())
+                    i += 1
+                # Unir todas las líneas, preservando saltos de línea
+                reemplazos[placeholder] = '\n'.join([l for l in contenido_placeholder if l.strip()])
+                continue
+            i += 1
+        reemplazos_por_diapositiva.append(reemplazos)
+    return reemplazos_por_diapositiva
+
 def main():
     """Función principal"""
     # Rutas de los archivos
@@ -143,17 +177,20 @@ def main():
     print("  ✓ Documento abierto")
     
     # Obtener la primera diapositiva
-    print("\n5. Modificando primera diapositiva...")
+    print("\n5. Modificando diapositivas...")
     draw_pages = doc.getDrawPages()
-    primera_diapositiva = draw_pages.getByIndex(0)
+    total_diapositivas = draw_pages.getCount()
 
-    # Mostrar textos encontrados
-    mostrar_textos_en_diapositiva(primera_diapositiva)
-
-    # Leer reemplazos de contenido.md para la primera diapositiva
-    reemplazos = obtener_reemplazos_primera_diapositiva(ruta_contenido)
-    for placeholder, texto in reemplazos.items():
-        reemplazar_texto_en_diapositiva(primera_diapositiva, placeholder, texto)
+    # Leer todos los reemplazos por diapositiva
+    reemplazos_por_diapositiva = obtener_reemplazos_por_diapositiva(ruta_contenido)
+    print(f"Procesando {min(len(reemplazos_por_diapositiva), total_diapositivas)} diapositivas...")
+    for idx in range(min(len(reemplazos_por_diapositiva), total_diapositivas)):
+        print(f"\nDiapositiva {idx+1}:")
+        diapositiva = draw_pages.getByIndex(idx)
+        mostrar_textos_en_diapositiva(diapositiva)
+        reemplazos = reemplazos_por_diapositiva[idx]
+        for placeholder, texto in reemplazos.items():
+            reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto)
     
     # Guardar cambios
     print("\n6. Guardando cambios...")
