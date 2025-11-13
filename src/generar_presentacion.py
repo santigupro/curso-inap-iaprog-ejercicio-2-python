@@ -9,6 +9,9 @@ from com.sun.star.beans import PropertyValue
 import os
 import sys
 import re
+import subprocess
+import time
+import signal
 
 def create_property(name, value):
     """Crea un objeto PropertyValue para UNO"""
@@ -149,6 +152,48 @@ def reemplazar_imagen_en_diapositiva(diapositiva, nueva_imagen_path):
                 print(f"  ⚠ Error al reemplazar imagen: {e}")
     return False
 
+def iniciar_libreoffice():
+    """Arranca el servicio de LibreOffice en modo headless si no está iniciado"""
+    import socket
+    s = socket.socket()
+    try:
+        s.connect(("localhost", 2002))
+        s.close()
+        print("LibreOffice ya está iniciado.")
+        return None
+    except Exception:
+        print("Arrancando LibreOffice en modo servidor...")
+        proc = subprocess.Popen([
+            "soffice",
+            "--accept=socket,host=localhost,port=2002;urp;",
+            "--headless",
+            "--norestore",
+            "--nofirststartwizard"
+        ])
+        # Esperar a que el servicio esté disponible
+        for _ in range(20):
+            try:
+                s = socket.socket()
+                s.connect(("localhost", 2002))
+                s.close()
+                print("LibreOffice iniciado correctamente.")
+                return proc
+            except Exception:
+                time.sleep(0.5)
+        print("Advertencia: LibreOffice puede no estar disponible todavía.")
+        return proc
+
+def cerrar_libreoffice(proc):
+    """Cierra el proceso de LibreOffice lanzado por el script"""
+    if proc:
+        print("Cerrando LibreOffice lanzado por el script...")
+        proc.terminate()
+        try:
+            proc.wait(timeout=10)
+        except Exception:
+            proc.kill()
+        print("LibreOffice cerrado.")
+
 def main():
     """Función principal"""
     # Rutas de los archivos
@@ -176,6 +221,7 @@ def main():
     
     # Conectar con LibreOffice
     print("\n1. Conectando con LibreOffice...")
+    proc_office = iniciar_libreoffice()
     desktop = get_desktop()
     print("  ✓ Conexión establecida")
     
@@ -230,6 +276,10 @@ def main():
             doc_output.close(True)
         except Exception:
             pass
+    
+    # Al final del script
+    if proc_office:
+        cerrar_libreoffice(proc_office)
     
     print("\n" + "=" * 70)
     print("✓ PRESENTACIÓN GENERADA EXITOSAMENTE")
