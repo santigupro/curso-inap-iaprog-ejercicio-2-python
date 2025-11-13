@@ -52,22 +52,28 @@ def guardar_como(doc, ruta_destino):
     props = (create_property("FilterName", "impress8"),)
     doc.storeToURL(url, props)
 
-def reemplazar_texto_en_diapositiva(diapositiva, texto_buscar, texto_reemplazo):
-    """Reemplaza texto en una diapositiva"""
-    # Iterar sobre todas las formas (shapes) en la diapositiva
+def reemplazar_texto_en_diapositiva(diapositiva, texto_buscar, texto_reemplazo, negritas=None):
+    """Reemplaza texto en una diapositiva y aplica negritas si se indica"""
     for i in range(diapositiva.getCount()):
         shape = diapositiva.getByIndex(i)
-        
-        # Verificar si la forma tiene texto
         if shape.supportsService("com.sun.star.drawing.Text"):
             try:
                 texto_actual = shape.getString()
                 if texto_buscar in texto_actual:
                     nuevo_texto = texto_actual.replace(texto_buscar, texto_reemplazo)
                     shape.setString(nuevo_texto)
-                    print(f"  ✓ Reemplazado '{texto_buscar}' por '{texto_reemplazo}'")
+                    print(f"  ✓ Reemplazado '{texto_buscar}' por '{texto_reemplazo[:50]}...'")
+                    # Aplicar negritas si corresponde
+                    if negritas:
+                        for ini, fin in negritas:
+                            try:
+                                shape.setCharWeight(uno.getConstantByName('com.sun.star.awt.FontWeight.BOLD'), ini, fin-ini)
+                            except Exception:
+                                pass
+                    return True
             except:
                 pass
+    return False
 
 def mostrar_textos_en_diapositiva(diapositiva):
     """Muestra todos los textos en una diapositiva"""
@@ -194,6 +200,16 @@ def cerrar_libreoffice(proc):
             proc.kill()
         print("LibreOffice cerrado.")
 
+def markdown_a_presentacion(texto):
+    """Convierte texto markdown simple a formato de presentación (viñetas y negritas)"""
+    # Viñetas: líneas que empiezan por - o *
+    texto = re.sub(r'^[\s]*[-*]\s+', '\u2022 ', texto, flags=re.MULTILINE)
+    # Negritas: **texto** -> LibreOffice soporta setCharWeight si se usa el API UNO
+    # Aquí devolvemos el texto y las posiciones de negrita
+    negritas = [(m.start(1), m.end(1)) for m in re.finditer(r'\*\*(.+?)\*\*', texto)]
+    texto = re.sub(r'\*\*(.+?)\*\*', r'\1', texto)
+    return texto, negritas
+
 def main():
     """Función principal"""
     # Rutas de los archivos
@@ -265,7 +281,12 @@ def main():
                 else:
                     print("  ⚠ No se encontró ruta de imagen en el texto de ${imagen}")
             else:
-                reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto)
+                # Si es contenido-textual, aplicar conversión markdown
+                if placeholder == "${contenido-textual}":
+                    texto, negritas = markdown_a_presentacion(texto)
+                    reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto, negritas)
+                else:
+                    reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto)
     # Guardar cambios
     doc_output.store()
     print("✓ Reemplazos aplicados en todas las diapositivas desde contenido.md")
