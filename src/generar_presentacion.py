@@ -179,29 +179,27 @@ def main():
     desktop = get_desktop()
     print("  ✓ Conexión establecida")
     
-    # Abrir template
+    # Abrir template y guardar como nuevo archivo
     print(f"\n2. Abriendo template: {ruta_template}")
-    doc = abrir_documento(desktop, ruta_template)
+    doc_template = abrir_documento(desktop, ruta_template)
     print("  ✓ Template abierto")
     
-    # Guardar como nuevo archivo
     print(f"\n3. Guardando como: {ruta_output}")
-    guardar_como(doc, ruta_output)
+    guardar_como(doc_template, ruta_output)
     print("  ✓ Archivo guardado")
     
-    # Cerrar el documento template
-    doc.close(True)
+    # Cerrar la plantilla
+    if doc_template:
+        try:
+            doc_template.close(True)
+        except Exception:
+            pass
     
-    # Abrir el documento generado
-    print(f"\n4. Abriendo documento generado: {ruta_output}")
-    doc = abrir_documento(desktop, ruta_output)
-    print("  ✓ Documento abierto")
-    
-    # Obtener la primera diapositiva
-    print("\n5. Modificando diapositivas...")
-    draw_pages = doc.getDrawPages()
+    # Abrir la presentación generada SOLO para modificar y guardar, luego cerrar
+    doc_output = abrir_documento(desktop, ruta_output)
+    draw_pages = doc_output.getDrawPages()
     total_diapositivas = draw_pages.getCount()
-
+    
     # Leer todos los reemplazos por diapositiva
     reemplazos_por_diapositiva = obtener_reemplazos_por_diapositiva(ruta_contenido)
     print(f"Procesando {min(len(reemplazos_por_diapositiva), total_diapositivas)} diapositivas...")
@@ -223,9 +221,15 @@ def main():
             else:
                 reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto)
     # Guardar cambios
-    print("\n6. Guardando cambios...")
-    doc.store()
-    print("  ✓ Cambios guardados")
+    doc_output.store()
+    print("✓ Reemplazos aplicados en todas las diapositivas desde contenido.md")
+    
+    # Cerrar la presentación generada
+    if doc_output:
+        try:
+            doc_output.close(True)
+        except Exception:
+            pass
     
     print("\n" + "=" * 70)
     print("✓ PRESENTACIÓN GENERADA EXITOSAMENTE")
