@@ -77,12 +77,35 @@ def mostrar_textos_en_diapositiva(diapositiva):
             except:
                 pass
 
+def obtener_reemplazos_primera_diapositiva(ruta_contenido):
+    """Obtiene los placeholders y textos a reemplazar para la primera diapositiva desde contenido.md"""
+    with open(ruta_contenido, 'r', encoding='utf-8') as f:
+        lineas = f.readlines()
+    reemplazos = {}
+    i = 0
+    while i < len(lineas):
+        linea = lineas[i].strip()
+        if linea.startswith('## ${') and linea.endswith('}'):
+            placeholder = linea[3:]
+            # El texto a reemplazar está en la siguiente línea no vacía
+            i += 1
+            while i < len(lineas) and not lineas[i].strip():
+                i += 1
+            if i < len(lineas):
+                reemplazos[placeholder] = lineas[i].strip()
+        i += 1
+        # Solo procesar la primera sección (Portada)
+        if '# Índice' in linea:
+            break
+    return reemplazos
+
 def main():
     """Función principal"""
     # Rutas de los archivos
     ruta_base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ruta_template = os.path.join(ruta_base, "input", "template.odp")
     ruta_output = os.path.join(ruta_base, "output", "presentacion-generada.odp")
+    ruta_contenido = os.path.join(ruta_base, "input", "contenido.md")
     
     # Verificar que existe el template
     if not os.path.exists(ruta_template):
@@ -127,18 +150,10 @@ def main():
     # Mostrar textos encontrados
     mostrar_textos_en_diapositiva(primera_diapositiva)
 
-    # Reemplazar textos
-    reemplazar_texto_en_diapositiva(
-        primera_diapositiva,
-        "${titulo-presentacion}",
-        "Tu Turno"
-    )
-
-    reemplazar_texto_en_diapositiva(
-        primera_diapositiva,
-        "${subtitulo-presentacion}",
-        "Sistema de gestión de citas previas de la Junta de Andalucía"
-    )
+    # Leer reemplazos de contenido.md para la primera diapositiva
+    reemplazos = obtener_reemplazos_primera_diapositiva(ruta_contenido)
+    for placeholder, texto in reemplazos.items():
+        reemplazar_texto_en_diapositiva(primera_diapositiva, placeholder, texto)
     
     # Guardar cambios
     print("\n6. Guardando cambios...")
