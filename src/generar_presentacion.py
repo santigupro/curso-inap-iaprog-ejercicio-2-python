@@ -133,6 +133,22 @@ def obtener_reemplazos_por_diapositiva(ruta_contenido):
         reemplazos_por_diapositiva.append(reemplazos)
     return reemplazos_por_diapositiva
 
+def reemplazar_imagen_en_diapositiva(diapositiva, nueva_imagen_path):
+    """Reemplaza la imagen en la diapositiva por la indicada en nueva_imagen_path"""
+    for i in range(diapositiva.getCount()):
+        shape = diapositiva.getByIndex(i)
+        # Verificar si la forma es una imagen
+        if shape.supportsService("com.sun.star.drawing.GraphicObjectShape"):
+            try:
+                # Reemplazar la imagen
+                url = uno.systemPathToFileUrl(os.path.abspath(nueva_imagen_path))
+                shape.GraphicURL = url
+                print(f"  ✓ Imagen reemplazada por '{nueva_imagen_path}'")
+                return True
+            except Exception as e:
+                print(f"  ⚠ Error al reemplazar imagen: {e}")
+    return False
+
 def main():
     """Función principal"""
     # Rutas de los archivos
@@ -189,9 +205,18 @@ def main():
         diapositiva = draw_pages.getByIndex(idx)
         mostrar_textos_en_diapositiva(diapositiva)
         reemplazos = reemplazos_por_diapositiva[idx]
+        # Reemplazo de texto
         for placeholder, texto in reemplazos.items():
-            reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto)
-    
+            if placeholder == "${imagen}":
+                # Extraer la ruta de la imagen del texto (puede estar en formato markdown ![alt](ruta))
+                match = re.search(r'\(([^)]+)\)', texto)
+                if match:
+                    imagen_path = os.path.join(ruta_base, "input", match.group(1))
+                    reemplazar_imagen_en_diapositiva(diapositiva, imagen_path)
+                else:
+                    print("  ⚠ No se encontró ruta de imagen en el texto de ${imagen}")
+            else:
+                reemplazar_texto_en_diapositiva(diapositiva, placeholder, texto)
     # Guardar cambios
     print("\n6. Guardando cambios...")
     doc.store()
