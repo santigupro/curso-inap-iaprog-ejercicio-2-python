@@ -7,7 +7,10 @@ Quería hacer que usasen tipos de plantilla pero de momento llegué hasta aquí.
 El script lo he probado en dos equipos diferentes pero siempre con Ubuntu.
 Habría que instalar libreoffice según se indica en el README.md. Si se quiere ver mejor la presnetacion habría que isntalar las fuentes, incluidas también en input/fuentes aunque no se ve bien mal sin las fuentes.
 
-Con ejecutar 
+Después de instalar libreoffice y python con ejecutar el script la raiz del repositorio se debería generar en output la presentación en libreoffice.
+```sh
+python3 src/generar_presentacion.py
+```
 
 # Proceso seguido para realizar el script
 - Busqué la plantilla de la Junta de Andalucia
