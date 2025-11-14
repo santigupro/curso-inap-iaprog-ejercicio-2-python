@@ -11,17 +11,19 @@ Sistema de gestión de citas previas de la Junta de Andalucía
 4. Flujo de funcionamiento  
 5. Integraciones y seguridad  
 6. Resultados y próximos pasos
+
 # 1. Introducción al sistema
 ## ${titulo-diapositiva}
 1. Introducción al sistema
 ## ${contenido-textual}
-Tu Turno es una plataforma diseñada para gestionar de forma eficiente las citas previas en los distintos servicios de la Junta de Andalucía.  
-Permite al ciudadano solicitar, modificar o cancelar citas de manera sencilla desde canales digitales y presenciales.
-- Disponible en web y dispositivos móviles  
-- Integrado con los servicios administrativos  
-- Accesible, rápido y orientado al ciudadano
+El sistema Tu Turno está formado por varias aplicaciones, que permitirán realizar todo el proceso de gestión de citas, desde su solicitud hasta que la cita es atendida.
+
+- Gestión de Centros: Permitirá administrar los distintos centros, servicios y áreas para los cuales se podrán solicitar cita, así como los usuarios y mostradores en los que se atenderán.
+- Cita Previa: Permitirá solicitar cita para el servicio que se desee, eligiendo el día y la hora que mejor convenga, así como cancelar o consultar citas.
+- Panel de Turnos: Permitirá ver en pantalla las citas llamadas por un agente, indicando la ventanilla y el lugar donde se encuentra el mostrador correspondiente.
 ## ${imagen}
-![Escritorio de tu turno](tuturno-1.jpg)
+![Escritorio de tu turno](tuturno-1.png)
+
 # 2. Objetivos y beneficios
 ## ${titulo-diapositiva}
 2. Objetivos y beneficios
@@ -36,8 +38,12 @@ Permite al ciudadano solicitar, modificar o cancelar citas de manera sencilla de
 - Mayor control para los gestores  
 - Disminución de colas y esperas en oficinas públicas  
 ## ${imagen}
-![Escritorio de tu turno](tuturno-2.jpg)
+![Escritorio de tu turno](tuturno-2.png)
+
 # 3. Arquitectura y componentes
+
+## ${titulo-diapositiva}
+3. Arquitectura y componentes
 ## ${contenido-textual}
 El sistema Tu Turno se compone de varios módulos integrados:
 
@@ -48,9 +54,11 @@ El sistema Tu Turno se compone de varios módulos integrados:
 
 La arquitectura sigue un enfoque modular y escalable, basado en microservicios.  
 ## ${imagen}
-![Escritorio de tu turno](tuturno-2.jpg)
+![Escritorio de tu turno](tuturno-3.jpg)
 # 4. Flujo de funcionamiento
 
+## ${titulo-diapositiva}
+4. Flujo de funcionamiento
 ## ${contenido-textual}
 1. El ciudadano accede al portal o app móvil  
 2. Selecciona el servicio y oficina deseada  
@@ -60,30 +68,20 @@ La arquitectura sigue un enfoque modular y escalable, basado en microservicios.
 
 El flujo se diseña para minimizar errores y facilitar la experiencia.  
 ## ${imagen}
-![Escritorio de tu turno](tuturno-2.jpg)
-# 5. Integraciones y seguridad
+![Escritorio de tu turno](tuturno-4.png)
+# 5. Resultados y próximos pasos
 
-Tu Turno cumple con los estándares de seguridad y protección de datos (RGPD).  
-Cuenta con autenticación mediante Cl@ve y certificados digitales.
-
-**Integraciones clave:**
-- Sistema de identidad de la Junta de Andalucía  
-- Plataforma de notificaciones y SMS  
-- Agenda de gestión interna  
-
-Los datos se procesan en entornos seguros, garantizando confidencialidad y trazabilidad.
-## ${imagen}
-![Escritorio de tu turno](tuturno-2.jpg)
-# 6. Resultados y próximos pasos
-
+## ${titulo-diapositiva}
+5. Conclusiones y próximos pasos
+## ${contenido-textual}
 **Resultados alcanzados:**
 - Miles de citas gestionadas con eficiencia  
 - Reducción media del tiempo de espera en un 40%  
 - Mayor satisfacción ciudadana registrada en encuestas  
 
 **Próximos pasos:**
-- Extensión del sistema a nuevos servicios  
-- Mejora del análisis de datos y estadísticas  
-- Incorporación de inteligencia artificial para gestión predictiva
+- Informe sobre la atención prestada en CEIS a las incidencias de Tu Turno.
+- Incorporar código QR para presentación contactless en el quiosco.
+- Adaptar el sistema de citas por videoconferencia para que la autenticación del ciudadano tenga validez jurídica.
 ## ${imagen}
-![Escritorio de tu turno](tuturno-2.jpg)
+![Escritorio de tu turno](tuturno-5.jpg)

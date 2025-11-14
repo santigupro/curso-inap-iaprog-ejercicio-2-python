@@ -210,6 +210,20 @@ def markdown_a_presentacion(texto):
     texto = re.sub(r'\*\*(.+?)\*\*', r'\1', texto)
     return texto, negritas
 
+def limpiar_bloqueos(ruta_base):
+    """Mata procesos soffice y elimina ficheros de bloqueo antes de ejecutar el script"""
+    print("Eliminando procesos soffice previos...")
+    subprocess.run(["pkill", "-f", "soffice"], check=False)
+    # Eliminar ficheros de bloqueo
+    posibles_locks = [
+        os.path.join(ruta_base, "output", ".~lock.presentacion-generada.odp#"),
+        os.path.join(ruta_base, "input", ".~lock.template.odp#"),
+    ]
+    for lock_path in posibles_locks:
+        if os.path.exists(lock_path):
+            print(f"Eliminando fichero de bloqueo: {lock_path}")
+            os.remove(lock_path)
+
 def main():
     """Función principal"""
     # Rutas de los archivos
@@ -217,6 +231,8 @@ def main():
     ruta_template = os.path.join(ruta_base, "input", "template.odp")
     ruta_output = os.path.join(ruta_base, "output", "presentacion-generada.odp")
     ruta_contenido = os.path.join(ruta_base, "input", "contenido.md")
+    
+    limpiar_bloqueos(ruta_base)
     
     # Borrar la presentación generada si existe
     if os.path.exists(ruta_output):
@@ -268,7 +284,7 @@ def main():
     for idx in range(min(len(reemplazos_por_diapositiva), total_diapositivas)):
         print(f"\nDiapositiva {idx+1}:")
         diapositiva = draw_pages.getByIndex(idx)
-        mostrar_textos_en_diapositiva(diapositiva)
+        # mostrar_textos_en_diapositiva(diapositiva)
         reemplazos = reemplazos_por_diapositiva[idx]
         # Reemplazo de texto
         for placeholder, texto in reemplazos.items():
