@@ -16,7 +16,7 @@ Sistema de gestión de citas previas de la Junta de Andalucía
 ## ${titulo-diapositiva}
 1. Introducción al sistema
 ## ${contenido-textual}
-El sistema Tu Turno está formado por varias aplicaciones, que permitirán realizar todo el proceso de gestión de citas, desde su solicitud hasta que la cita es atendida.
+El sistema Tu Turno está formado por varias aplicaciones, que permitirán realizar todo el proceso de gestión de citas:
 
 - Gestión de Centros: Permitirá administrar los distintos centros, servicios y áreas para los cuales se podrán solicitar cita, así como los usuarios y mostradores en los que se atenderán.
 - Cita Previa: Permitirá solicitar cita para el servicio que se desee, eligiendo el día y la hora que mejor convenga, así como cancelar o consultar citas.
