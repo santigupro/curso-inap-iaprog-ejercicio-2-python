@@ -1,13 +1,62 @@
 # Generador de Presentaciones LibreOffice
 
-Este proyecto permite generar una presentación de LibreOffice Impress (.odp) a partir de una plantilla, un archivo de contenido en Markdown e imagenes en el directorio input, reemplazando placeholders.
+El script realizado permite generar una presentación de LibreOffice Impress (.odp) a partir de una plantilla, un archivo de contenido en Markdown e imagenes situadas en el directorio input.
+
+Respeta los estilos de las diapositivas de template.odp (que es la que usamos en la Junta de Andalucia) sustituyendo ciertos marcadores por el contenido de contenido.md. Lo que hace es reemplazar cada diapositiva por el titulo en el mismo orden correspondiente de contenido.md, es decir, en la diapositiva 1 se busca el contenido del titulo 1 y su contenido del markdown.
+Quería hacer que usasen tipos de plantilla pero de momento llegué hasta aquí... :(
+El script lo he probado en dos equipos diferentes pero siempre con Ubuntu.
+Habría que instalar libreoffice según se indica en el README.md. Si se quiere ver mejor la presnetacion habría que isntalar las fuentes, incluidas también en input/fuentes aunque no se ve bien mal sin las fuentes.
+
+Con ejecutar 
+
+# Proceso seguido para realizar el script
+- Busqué la plantilla de la Junta de Andalucia
+- Generé un markdown con el texto e imagenes de la presentación con Perplexity
+- Con Visual Studio Code y GitHub Copilot generé el script en varias fases:
+    - Primero lo intenté con Java y el sdk de libreoffice y no salía nada bien.
+    - Después investigué un poco y vi que era recomendable usar la API UNO de libreoffice con Python.
+    - Hice el script en varias fases, primero susituyendo la portada, después la segunda dipaoistiva y después de manera iterativa.
+    - Como hay que tener ejecutandose un servicio de libreoffice, para ser menos molesto añadí también al propio script que arrancase y cerrase el servicio.
+
+# Formato de `contenido.md`
+
+El archivo `contenido.md` contiene el contenido de la presentación en formato Markdown estructurado por secciones. Cada diapositiva se define mediante títulos y variables entre llaves `${...}` que serán reemplazadas por el script. El formato típico incluye:
+
+- Títulos de sección y diapositiva (`#`, `##`)
+- Variables como `${titulo-presentacion}`, `${subtitulo-presentacion}`, `${contenido-textual}`
+- Listas y texto explicativo
+- Imágenes referenciadas con sintaxis Markdown (`![Texto](imagen.png)`)
+
+Ejemplo de estructura:
+
+```
+# Portada
+## ${titulo-presentacion}
+titulo
+## ${subtitulo-presentacion}
+subtitulo
+# Índice
+## ${contenido-textual}
+- uno
+- dos
+...
+# 1. Introducción al sistema
+## ${titulo-diapositiva}
+Inotrudccion
+## ${contenido-textual}
+...
+## ${imagen}
+url markdown a la imagen local
+```
+
+Las variables serán sustituidas por el script para generar cada diapositiva de la presentación.
+
 
 ## Requisitos
 
 - Python 3.x
 - LibreOffice instalado
-- LibreOffice ejecutándose en modo servidor UNO
-- Paquete `python3-uno` (Ubuntu) o equivalente UNO para Python
+- Fuentes Source Sans Pro para ver bien la presentacion (incluidas en input/fuentes)
 
 ## Estructura del proyecto
 
@@ -15,21 +64,23 @@ Este proyecto permite generar una presentación de LibreOffice Impress (.odp) a 
 input/
     contenido.md         # Archivo Markdown con el contenido de la presentación
     template.odp         # Plantilla de presentación LibreOffice Impress
+    fuentes              # Fuentes a instalar para la presentación
 output/
     presentacion-generada.odp # Archivo generado
 src/
     generar_presentacion.py   # Script principal
 ```
 
-## Instalación de dependencias
 
-### Ubuntu
+
+
+## Instalación de dependencias
 
 1. Instala LibreOffice y el paquete UNO para Python:
 
 ```sh
 sudo apt update
-sudo apt install libreoffice python3-uno
+sudo apt install libreoffice
 ```
 
 2. (Opcional) Verifica que LibreOffice está instalado:
@@ -38,59 +89,7 @@ sudo apt install libreoffice python3-uno
 libreoffice --version
 ```
 
-### Windows
-
-1. Instala LibreOffice desde [https://www.libreoffice.org/download/download/](https://www.libreoffice.org/download/download/)
-
-2. Instala Python 3 desde [https://www.python.org/downloads/](https://www.python.org/downloads/)
-
-3. Instala el paquete UNO para Python:
-   - Descarga el archivo `pyuno` correspondiente a tu versión de LibreOffice y Python.
-   - Consulta la documentación oficial de LibreOffice para detalles: [https://wiki.documentfoundation.org/Documentation/DevGuide/Python_Scripting](https://wiki.documentfoundation.org/Documentation/DevGuide/Python_Scripting)
-
-## Ejecución del script
-
-### Ubuntu
-
-1. Ejecuta el script desde la raíz del proyecto:
-
-```sh
-python3 src/generar_presentacion.py
-```
-
-El archivo generado estará en `output/presentacion-generada.odp`.
-
-### Windows
-
-1. Abre una terminal (CMD o PowerShell) en la raíz del proyecto.
-3. Ejecuta el script:
-
-```sh
-python src\generar_presentacion.py
-```
-
-El archivo generado estará en `output\presentacion-generada.odp`.
-
 ## Notas
 
 - El script inicia LibreOffice en modo servidor si no está corriendo.
-- Si tienes problemas con la conexión UNO, asegúrate de que LibreOffice esté ejecutándose con el parámetro:
-
-```sh
-soffice --accept=socket,host=localhost,port=2002;urp; --headless --norestore --nofirststartwizard
-```
-
-- En Windows, puedes iniciar LibreOffice en modo servidor desde la terminal:
-
-```sh
-"C:\Program Files\LibreOffice\program\soffice.exe" --accept=socket,host=localhost,port=2002;urp; --headless --norestore --nofirststartwizard
-```
-
-## Personalización
-
-- Modifica `contenido.md` para cambiar el contenido de la presentación.
-- Modifica `template.odp` para cambiar el diseño de la presentación.
-
-## Licencia
-
-Este proyecto es de uso educativo y libre.
+- Algunas veces si el script da error es que no ha arrancado bien el servicio de libreoffice, pero ejecutar por segunda vez el script lo arranca bien.
