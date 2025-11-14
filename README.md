@@ -1,6 +1,6 @@
 # Generador de Presentaciones LibreOffice
 
-Este proyecto permite generar una presentación de LibreOffice Impress (.odp) a partir de una plantilla y un archivo de contenido en Markdown, reemplazando placeholders y ajustando el número de diapositivas automáticamente.
+Este proyecto permite generar una presentación de LibreOffice Impress (.odp) a partir de una plantilla, un archivo de contenido en Markdown e imagenes en el directorio input, reemplazando placeholders.
 
 ## Requisitos
 
